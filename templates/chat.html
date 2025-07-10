@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FAQ Chatbot</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 20px;
+      text-align: center;
+    }
+    #chat-box {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+    }
+    .message {
+      margin: 10px 0;
+      text-align: left;
+    }
+    .user { font-weight: bold; }
+    .bot { color: green; }
+    input[type="text"] {
+      width: 70%;
+      padding: 10px;
+    }
+    button {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 FAQ Chatbot</h1>
+  <div id="chat-box"></div>
+  <input type="text" id="user-input" placeholder="Ask your question..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    function sendMessage() {
+      let input = document.getElementById("user-input");
+      let message = input.value;
+      if (message.trim() === "") return;
+
+      let chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML += `<div class="message user">You: ${message}</div>`;
+      input.value = "";
+
+      fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: `message=${encodeURIComponent(message)}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        chatBox.innerHTML += `<div class="message bot">Bot: ${data.response}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+    }
+  </script>
+</body>
+</html>
